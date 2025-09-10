@@ -1,5 +1,5 @@
 import { Transaction, Summary, ChartData, CategoryData, ViewType } from '@/types';
-import { format, startOfDay, startOfWeek, startOfMonth, startOfYear, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval } from 'date-fns';
+import { format, startOfWeek, startOfMonth, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval } from 'date-fns';
 
 export function calculateSummary(transactions: Transaction[], period: string): Summary {
   const income = transactions

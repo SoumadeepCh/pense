@@ -30,7 +30,7 @@ export class AICategorizationService {
 
     for (const [category, keywords] of Object.entries(AI_CATEGORIZATION_KEYWORDS)) {
       let matchCount = 0;
-      let totalKeywords = keywords.length;
+      const totalKeywords = keywords.length;
 
       for (const keyword of keywords) {
         if (lowerText.includes(keyword.toLowerCase())) {

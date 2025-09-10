@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { 
-  Plus, BarChart3, List, Settings, Download, Upload, 
-  Menu, Sparkles, Home, TrendingUp, Wallet 
+  Plus, BarChart3, List, Download, Upload, 
+  Menu, Home, Wallet, Sparkles, TrendingUp
 } from 'lucide-react';
 import { Transaction, Category } from '@/types';
 import { StorageService } from '@/lib/storage';
@@ -39,8 +38,7 @@ export function Dashboard() {
       
       setTransactions(loadedTransactions);
       setCategories(loadedCategories);
-    } catch (error) {
-      console.error('Failed to load data:', error);
+    } catch {
       toast.error('Failed to load data');
     } finally {
       setIsLoading(false);
@@ -81,7 +79,7 @@ export function Dashboard() {
       URL.revokeObjectURL(url);
       
       toast.success('Data exported successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to export data');
     }
   };
@@ -102,7 +100,7 @@ export function Dashboard() {
         } else {
           toast.error('Failed to import data');
         }
-      } catch (error) {
+      } catch {
         toast.error('Invalid file format');
       }
     };

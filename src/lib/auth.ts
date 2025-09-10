@@ -1,4 +1,3 @@
-import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import { MongoClient } from 'mongodb';
@@ -8,7 +7,7 @@ import { User } from '@/models';
 
 const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/expense-tracker');
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   adapter: MongoDBAdapter(client, {
     databaseName: 'expense-tracker',
   }),
@@ -52,21 +51,22 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    jwt: async ({ token, user }: any) => {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }) {
-      if (token) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    session: async ({ session, token }: any) => {
+      if (token && session.user) {
         session.user.id = token.id as string;
       }
       return session;

@@ -4,7 +4,7 @@ import { getSession } from 'next-auth/react';
 // Get user ID from session
 const getUserId = async (): Promise<string | null> => {
   const session = await getSession();
-  return session?.user?.id || null;
+  return (session?.user as { id?: string })?.id || null;
 };
 
 export class DatabaseService {
@@ -31,7 +31,7 @@ export class DatabaseService {
       const transactions = await this.handleResponse(response);
       
       // Convert date strings back to Date objects
-      return transactions.map((t: any) => ({
+      return transactions.map((t: Transaction) => ({
         ...t,
         date: new Date(t.date),
         createdAt: new Date(t.createdAt),
@@ -82,6 +82,11 @@ export class DatabaseService {
     updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>
   ): Promise<Transaction | null> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       const response = await fetch(`${this.baseUrl}/transactions`, {
         method: 'PUT',
         headers: {
@@ -89,7 +94,7 @@ export class DatabaseService {
         },
         body: JSON.stringify({
           id,
-          userId: DEMO_USER_ID,
+          userId,
           ...updates,
         }),
       });
@@ -110,8 +115,13 @@ export class DatabaseService {
 
   static async deleteTransaction(id: string): Promise<boolean> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       const response = await fetch(
-        `${this.baseUrl}/transactions?id=${id}&userId=${DEMO_USER_ID}`,
+        `${this.baseUrl}/transactions?id=${id}&userId=${userId}`,
         {
           method: 'DELETE',
         }
@@ -128,13 +138,18 @@ export class DatabaseService {
   // Categories
   static async getCategories(): Promise<Category[]> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       // First, ensure default categories are initialized
       await this.initializeDefaultCategories();
       
-      const response = await fetch(`${this.baseUrl}/categories?userId=${DEMO_USER_ID}`);
+      const response = await fetch(`${this.baseUrl}/categories?userId=${userId}`);
       const categories = await this.handleResponse(response);
       
-      return categories.map((c: any) => ({
+      return categories.map((c: Category & { createdAt: string | Date; updatedAt: string | Date }) => ({
         ...c,
         createdAt: new Date(c.createdAt),
         updatedAt: new Date(c.updatedAt),
@@ -148,13 +163,18 @@ export class DatabaseService {
 
   static async saveCategory(category: Omit<Category, 'id'>): Promise<Category> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       const response = await fetch(`${this.baseUrl}/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: DEMO_USER_ID,
+          userId,
           ...category,
         }),
       });
@@ -177,6 +197,11 @@ export class DatabaseService {
     updates: Partial<Omit<Category, 'id'>>
   ): Promise<Category | null> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       const response = await fetch(`${this.baseUrl}/categories`, {
         method: 'PUT',
         headers: {
@@ -184,7 +209,7 @@ export class DatabaseService {
         },
         body: JSON.stringify({
           id,
-          userId: DEMO_USER_ID,
+          userId,
           ...updates,
         }),
       });
@@ -204,8 +229,13 @@ export class DatabaseService {
 
   static async deleteCategory(id: string): Promise<boolean> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       const response = await fetch(
-        `${this.baseUrl}/categories?id=${id}&userId=${DEMO_USER_ID}`,
+        `${this.baseUrl}/categories?id=${id}&userId=${userId}`,
         {
           method: 'DELETE',
         }
@@ -233,6 +263,11 @@ export class DatabaseService {
   // Utility methods for data export/import
   static async exportData(): Promise<string> {
     try {
+      const userId = await getUserId();
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
       const [transactions, categories] = await Promise.all([
         this.getTransactions(),
         this.getCategories(),
@@ -242,7 +277,7 @@ export class DatabaseService {
         transactions,
         categories: categories.filter(c => !c.isDefault), // Only export custom categories
         exportDate: new Date(),
-        userId: DEMO_USER_ID,
+        userId,
       };
 
       return JSON.stringify(data, null, 2);
@@ -321,7 +356,7 @@ export class DatabaseService {
   }
 
   // Settings (store in localStorage for now)
-  static getSettings(): Record<string, any> {
+  static getSettings(): Record<string, unknown> {
     try {
       const data = localStorage.getItem('expense-tracker-settings');
       return data ? JSON.parse(data) : {};
@@ -331,7 +366,7 @@ export class DatabaseService {
     }
   }
 
-  static saveSetting(key: string, value: any): void {
+  static saveSetting(key: string, value: unknown): void {
     try {
       const settings = this.getSettings();
       settings[key] = value;

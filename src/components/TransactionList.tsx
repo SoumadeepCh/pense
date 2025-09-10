@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MoreVertical, Edit, Trash2, Search, Filter, ArrowUpDown } from 'lucide-react';
-import { format } from 'date-fns';
+import { Calendar, MoreVertical, Edit, Trash2, Search, ArrowUpDown } from 'lucide-react';
 import { Transaction, Category } from '@/types';
 import { formatCurrency, formatDateShort, filterTransactions } from '@/lib/utils-expense';
 import { DatabaseService } from '@/lib/database-service-auth';
@@ -39,8 +38,8 @@ export function TransactionList({ transactions, categories, onEdit, onRefresh }:
   });
 
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    let aValue: any = a[sortField];
-    let bValue: any = b[sortField];
+    let aValue: string | number | Date = a[sortField];
+    let bValue: string | number | Date = b[sortField];
 
     if (sortField === 'date') {
       aValue = new Date(aValue).getTime();

@@ -1,6 +1,6 @@
 # Expense Tracker AI 🤖💰
 
-A modern, AI-powered expense tracking application built with Next.js 14, TypeScript, and beautiful UI components. Track your income and expenses with intelligent categorization and stunning analytics.
+A modern, AI-powered expense tracking application built with Next.js 14, TypeScript, and beautiful UI components. Track your income and expenses with intelligent categorization and stunning analytics..
 
 ## ✨ Features
 

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     // Convert MongoDB _id to id for frontend compatibility
     const formattedTransactions = transactions.map(transaction => ({
-      id: transaction._id.toString(),
+      id: (transaction._id as { toString(): string }).toString(),
       userId: transaction.userId,
       amount: transaction.amount,
       description: transaction.description,

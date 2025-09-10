@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -10,8 +9,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { 
-  TrendingUp, TrendingDown, DollarSign, CreditCard, Calendar, 
-  PieChart as PieChartIcon, BarChart3, LineChart as LineChartIcon 
+  TrendingUp, TrendingDown, DollarSign, CreditCard, 
+  PieChart as PieChartIcon, BarChart3
 } from 'lucide-react';
 import { Transaction, Category, ViewType, ChartType } from '@/types';
 import { 
@@ -19,14 +18,14 @@ import {
   formatCurrency, filterTransactions 
 } from '@/lib/utils-expense';
 import { CHART_COLORS } from '@/lib/constants';
-import { format, startOfMonth, endOfMonth, startOfYear, endOfYear, subMonths, subDays } from 'date-fns';
+import { subMonths, subDays } from 'date-fns';
 
 interface AnalyticsProps {
   transactions: Transaction[];
   categories: Category[];
 }
 
-export function Analytics({ transactions, categories }: AnalyticsProps) {
+export function Analytics({ transactions }: AnalyticsProps) {
   const [viewType, setViewType] = useState<ViewType>('monthly');
   const [chartType, setChartType] = useState<ChartType>('area');
   const [selectedPeriod, setSelectedPeriod] = useState('3months');
@@ -67,19 +66,22 @@ export function Analytics({ transactions, categories }: AnalyticsProps) {
   const categoryData = getCategoryData(periodTransactions);
   
   // Separate income and expense category data
-  const incomeData = getCategoryData(periodTransactions.filter(t => t.type === 'income'));
   const expenseData = getCategoryData(periodTransactions.filter(t => t.type === 'expense'));
 
   // Top spending categories
   const topCategories = categoryData.slice(0, 5);
 
   // Custom tooltip for charts
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: {
+    active?: boolean;
+    payload?: Array<{ name: string; value: number; color: string }>;
+    label?: string;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-4 border rounded-lg shadow-lg">
           <p className="font-medium text-gray-900 mb-2">{label}</p>
-          {payload.map((item: any, index: number) => (
+          {payload.map((item, index: number) => (
             <p key={index} className="text-sm" style={{ color: item.color }}>
               {item.name}: {formatCurrency(item.value)}
             </p>
@@ -90,7 +92,7 @@ export function Analytics({ transactions, categories }: AnalyticsProps) {
     return null;
   };
 
-  const renderChart = () => {
+  const renderChart = (): React.ReactElement | null => {
     if (chartData.length === 0) {
       return (
         <div className="h-[400px] flex items-center justify-center text-gray-500">
@@ -303,7 +305,7 @@ export function Analytics({ transactions, categories }: AnalyticsProps) {
         <CardContent>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
-              {renderChart()}
+              {renderChart() || <div>No chart available</div>}
             </ResponsiveContainer>
           </div>
         </CardContent>

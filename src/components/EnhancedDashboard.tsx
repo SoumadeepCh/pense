@@ -22,7 +22,7 @@ import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
 import { Analytics } from './Analytics';
 import { formatCurrency } from '@/lib/utils-expense';
-import { loadDemoData, hasDemoData } from '@/lib/demo-data-db';
+import { loadDemoData } from '@/lib/demo-data-db';
 import { toast } from 'sonner';
 
 function EnhancedDashboardContent() {
@@ -65,8 +65,7 @@ function EnhancedDashboardContent() {
       if (loadedTransactions.length === 0) {
         setShowWelcome(true);
       }
-    } catch (error) {
-      console.error('Failed to load data:', error);
+    } catch {
       toast.error('Failed to load data');
     } finally {
       setIsLoading(false);
@@ -106,7 +105,7 @@ function EnhancedDashboardContent() {
       URL.revokeObjectURL(url);
       
       toast.success('Data exported successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to export data');
     }
   };
@@ -127,7 +126,7 @@ function EnhancedDashboardContent() {
         } else {
           toast.error('Failed to import data');
         }
-      } catch (error) {
+      } catch {
         toast.error('Invalid file format');
       }
     };
@@ -150,7 +149,7 @@ function EnhancedDashboardContent() {
         setShowWelcome(false);
         toast.success('Demo data loaded successfully!');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load demo data');
     }
   };

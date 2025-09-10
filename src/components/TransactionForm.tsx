@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -66,7 +66,7 @@ export function TransactionForm({ onSubmit, onCancel, initialData, categories }:
       setAiSuggestions(suggestions);
       
       setAiInput('');
-    } catch (error) {
+    } catch {
       toast.error('Failed to process AI categorization');
     } finally {
       setIsLoading(false);
@@ -113,7 +113,7 @@ export function TransactionForm({ onSubmit, onCancel, initialData, categories }:
         setCategory('');
         setDate(new Date());
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to save transaction');
     }
   };

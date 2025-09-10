@@ -7,10 +7,10 @@ export class DatabaseService {
   // Helper method to get user ID from session
   private static async getUserId(): Promise<string> {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user || !(session.user as { id?: string }).id) {
       throw new Error('User not authenticated');
     }
-    return session.user.id;
+    return (session.user as { id: string }).id;
   }
 
   // Helper method to handle API responses
@@ -30,7 +30,7 @@ export class DatabaseService {
       const transactions = await this.handleResponse(response);
       
       // Convert date strings back to Date objects
-      return transactions.map((t: any) => ({
+      return transactions.map((t: Transaction & { date: string | Date; createdAt: string | Date; updatedAt: string | Date }) => ({
         ...t,
         date: new Date(t.date),
         createdAt: new Date(t.createdAt),
@@ -130,7 +130,7 @@ export class DatabaseService {
       const response = await fetch(`${this.baseUrl}/categories?userId=${userId}`);
       const categories = await this.handleResponse(response);
       
-      return categories.map((c: any) => ({
+      return categories.map((c: Category & { createdAt: string | Date; updatedAt: string | Date }) => ({
         ...c,
         createdAt: new Date(c.createdAt),
         updatedAt: new Date(c.updatedAt),
@@ -314,7 +314,7 @@ export class DatabaseService {
   }
 
   // Settings (store in localStorage for now)
-  static getSettings(): Record<string, any> {
+  static getSettings(): Record<string, unknown> {
     try {
       const data = localStorage.getItem('expense-tracker-settings');
       return data ? JSON.parse(data) : {};
@@ -324,7 +324,7 @@ export class DatabaseService {
     }
   }
 
-  static saveSetting(key: string, value: any): void {
+  static saveSetting(key: string, value: unknown): void {
     try {
       const settings = this.getSettings();
       settings[key] = value;

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import { Category } from '@/models';
 import { DEFAULT_CATEGORIES } from '@/lib/constants';
 
 // Initialize default categories in the database
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     await dbConnect();
     

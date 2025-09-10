@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     // Convert MongoDB _id to id for frontend compatibility
     const formattedCategories = categories.map(category => ({
-      id: category._id.toString(),
+      id: (category._id as { toString(): string }).toString(),
       userId: category.userId,
       name: category.name,
       color: category.color,

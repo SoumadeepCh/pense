@@ -15,9 +15,9 @@ export class StorageService {
       const data = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
       if (!data) return [];
       
-      const transactions = JSON.parse(data);
+      const transactions = JSON.parse(data) as Array<Omit<Transaction, 'date' | 'createdAt' | 'updatedAt'> & { date: string; createdAt: string; updatedAt: string }>;
       // Convert date strings back to Date objects
-      return transactions.map((t: any) => ({
+      return transactions.map((t) => ({
         ...t,
         date: new Date(t.date),
         createdAt: new Date(t.createdAt),
@@ -159,7 +159,7 @@ export class StorageService {
   }
 
   // Settings
-  static getSettings(): Record<string, any> {
+  static getSettings(): Record<string, unknown> {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       return data ? JSON.parse(data) : {};
@@ -169,7 +169,7 @@ export class StorageService {
     }
   }
 
-  static saveSetting(key: string, value: any): void {
+  static saveSetting(key: string, value: unknown): void {
     try {
       const settings = this.getSettings();
       settings[key] = value;
@@ -197,7 +197,7 @@ export class StorageService {
       
       if (data.transactions) {
         // Validate and convert dates
-        const transactions = data.transactions.map((t: any) => ({
+        const transactions = (data.transactions as Array<Omit<Transaction, 'date' | 'createdAt' | 'updatedAt'> & { date: string; createdAt: string; updatedAt: string }>).map((t) => ({
           ...t,
           date: new Date(t.date),
           createdAt: new Date(t.createdAt),
